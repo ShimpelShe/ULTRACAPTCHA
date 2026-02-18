@@ -33,10 +33,12 @@
     const challenges = ["filth_kill", "stray_parry"];
     const mainDiv = document.getElementById("content");
     const compBar = document.getElementById("completionState");
-    const titleBar = document.getElementById("titletext");
+    const titleBar = document.getElementById("titlebar");
+    const titleTxt = document.getElementById("titletext");
     const startBtn = document.getElementById("start");
     const body = document.body;
-    let clicky = new Audio("./audio/click.wav");
+    const kiis = [];
+    const clicky = new Audio("../audio/click.wav");
     startBtn.addEventListener("mousedown", () => {
       clicky.currentTime = 0;
       clicky.play();
@@ -45,11 +47,21 @@
       start();
     });
     var UA = new URLSearchParams(window.location.search);
+    document.addEventListener("keydown", (e) => {
+      if (!kiis.includes(e.key)) {
+        kiis.push(e.key);
+      }
+    });
+    document.addEventListener("keyup", (e) => {
+      if (kiis.includes(e.key)) {
+        kiis.pop(e.key);
+      }
+    });
     function start() {
       var challenge =
         UA.get("c") || Math.floor(Math.random() * challenges.length);
       challenge = Number(challenge);
-      titleBar.innerText =
+      titleTxt.innerText =
         "ULTRACAPTCHA " +
         Math.floor(challenge / 4) +
         "-" +
@@ -147,6 +159,11 @@
           let k = 1;
           let h = false;
           let move = (element, mult) => {
+            if (kiis.includes("f") && h) {
+              p = true;
+            } else {
+              p = false;
+            }
             element.t += 1;
             !p ? (k += mult * (element.t * 0.01)) : (k -= 2);
             element.style.transform = "scale(" + k + ")";
@@ -256,11 +273,6 @@
               }, 700);
             }
           };
-          document.addEventListener("keypress", (e) => {
-            if (e.key == "f" && h) {
-              p = true;
-            }
-          });
           let shoot = setInterval(() => {
             let browawamp = new Audio("../audio/stray_shoot.ogg");
             mainDiv.appendChild(browawamp);
@@ -272,6 +284,7 @@
             orb.style.position = "absolute";
             orb.style.left = "calc(50% - 6px)";
             orb.style.top = "calc(50% - 16px)";
+            orb.style.filter = "none";
             orb.style.transitionDuration = "64ms";
             orb.t = 0;
             orb.draggable = false;
@@ -283,7 +296,10 @@
           }, 5000);
           break;
         case 2:
-          console.log("coin_shoot");
+          mainDiv.innerText = "flip & shoot 3 coins";
+          body.style.cursor = "crosshair";
+          titleBar.style.cursor = "default";
+          compBar.innerText = "[LMB] To shoot [RMB] to flip\n[0/3]";
           break;
         default:
           mainDiv.innerText = "Error: level does not exist";

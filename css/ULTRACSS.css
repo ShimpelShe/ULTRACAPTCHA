@@ -28,8 +28,9 @@
   border-top: 1.5px solid #000;
   padding: 4px;
   color: white;
-  height: 258px;
+  height: 259px;
   text-align: center;
+  user-select: none;
 }
 #completionState {
   transition-duration: 200ms;
