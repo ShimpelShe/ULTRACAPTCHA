@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ULTRACAPTCHA V1</title>
   </head>
-  <link href="./css/ULTRACSS.css" rel="stylesheet" />
+  <link href="../css/ULTRACSS.css" rel="stylesheet" />
   <body>
     <div id="titlebar">
       <span class="icon">D:</span>
@@ -59,7 +59,7 @@
           mainDiv.innerText = "kill the filth ";
           let j = 6;
           compBar.innerText = 6 - j + "/6";
-          let draw = new Audio("./audio/draw.mp3");
+          let draw = new Audio("../audio/draw.mp3");
           mainDiv.appendChild(draw);
           document.addEventListener("mouseenter", () => {
             draw.currentTime = 0;
@@ -67,7 +67,7 @@
           });
           for (let i = 0; i < 6; i++) {
             let filth = document.createElement("img");
-            filth.src = "./images/filth.webp";
+            filth.src = "../images/filth.webp";
             filth.draggable = false;
             filth.style.width = "32px";
             filth.style.height = "64px";
@@ -104,12 +104,12 @@
               filth.style.pointerEvents = "none";
               filth.style.transform =
                 "scale(0) rotate(90deg) translate(30px, -30px)";
-              let shoot_audio = new Audio("./audio/revolver_shoot.ogg");
+              let shoot_audio = new Audio("../audio/revolver_shoot.ogg");
               mainDiv.appendChild(shoot_audio);
               shoot_audio.volume = 0.4;
               shoot_audio.play();
               let blood = document.createElement("img");
-              blood.src = "./images/blood.png";
+              blood.src = "../images/blood.png";
               blood.style.position = "absolute";
               blood.style.width = "64px";
               blood.style.height = "64px";
@@ -135,7 +135,7 @@
           mainDiv.innerText = "parry the projectile";
           compBar.innerText = "[F] to parry";
           let stray = document.createElement("img");
-          stray.src = "./images/stray.webp";
+          stray.src = "../images/stray.webp";
           stray.style.width = "16px";
           stray.style.position = "absolute";
           stray.style.left = "calc(50% - 8px)";
@@ -161,7 +161,7 @@
               k = 1;
               h = false;
               element.remove();
-              let ow = new Audio("./audio/damage.ogg");
+              let ow = new Audio("../audio/damage.ogg");
               mainDiv.appendChild(ow);
               ow.play();
               body.style.filter = "sepia(1) blur(3px)";
@@ -182,7 +182,7 @@
                 ow.remove();
               }, 800);
             } else {
-              let ye = new Audio("./audio/parry.mp3");
+              let ye = new Audio("../audio/parry.mp3");
               mainDiv.appendChild(ye);
               clearInterval(shoot);
               ye.play();
@@ -195,7 +195,7 @@
               setTimeout(() => {
                 element.remove();
                 stray.remove();
-                let explosionsfx = new Audio("./audio/explosion.ogg");
+                let explosionsfx = new Audio("../audio/explosion.ogg");
                 mainDiv.appendChild(explosionsfx);
                 explosionsfx.play();
                 let e_shock = document.createElement("div");
@@ -262,12 +262,12 @@
             }
           });
           let shoot = setInterval(() => {
-            let browawamp = new Audio("./audio/stray_shoot.ogg");
+            let browawamp = new Audio("../audio/stray_shoot.ogg");
             mainDiv.appendChild(browawamp);
             browawamp.volume = 0.4;
             browawamp.play();
             let orb = document.createElement("img");
-            orb.src = "/images/orb.png";
+            orb.src = "../images/orb.png";
             orb.style.width = "12px";
             orb.style.position = "absolute";
             orb.style.left = "calc(50% - 6px)";
