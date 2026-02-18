@@ -1,0 +1,295 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ULTRACAPTCHA V1</title>
+  </head>
+  <link href="/css/ULTRACSS.css" rel="stylesheet" />
+  <body>
+    <div id="titlebar">
+      <span class="icon">D:</span>
+      <span id="titletext">ULTRACAPTCHA</span>
+      <button class="useless" style="right: 50px">&#x1F784;</button
+      ><button class="useless" style="right: 28px">+</button
+      ><button class="useless" style="right: 6px">&#x25FB;</button>
+    </div>
+    <div id="main">
+      <div id="content">
+        <h1 style="font-weight: normal; margin-top: 75px">ULTRACAPTCHA</h1>
+        <button class="useful" id="start" style="position: relative; top: 5px">
+          Start
+        </button>
+      </div>
+      <div id="completionState"></div>
+    </div>
+  </body>
+  <script>
+    function yup_human() {
+      window.parent.postMessage("non-machine", "*");
+    }
+    document.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+    });
+    const challenges = ["filth_kill", "stray_parry"];
+    const mainDiv = document.getElementById("content");
+    const compBar = document.getElementById("completionState");
+    const titleBar = document.getElementById("titletext");
+    const startBtn = document.getElementById("start");
+    const body = document.body;
+    let clicky = new Audio("/audio/click.wav");
+    startBtn.addEventListener("mousedown", () => {
+      clicky.currentTime = 0;
+      clicky.play();
+    });
+    startBtn.addEventListener("click", () => {
+      start();
+    });
+    var UA = new URLSearchParams(window.location.search);
+    function start() {
+      var challenge =
+        UA.get("c") || Math.floor(Math.random() * challenges.length);
+      challenge = Number(challenge);
+      titleBar.innerText =
+        "ULTRACAPTCHA " +
+        Math.floor(challenge / 4) +
+        "-" +
+        ((challenge % 4) + 1);
+      switch (challenge) {
+        case 0:
+          mainDiv.innerText = "kill the filth ";
+          let j = 6;
+          compBar.innerText = 6 - j + "/6";
+          let draw = new Audio("/audio/draw.mp3");
+          mainDiv.appendChild(draw);
+          document.addEventListener("mouseenter", () => {
+            draw.currentTime = 0;
+            draw.play();
+          });
+          for (let i = 0; i < 6; i++) {
+            let filth = document.createElement("img");
+            filth.src = "/images/filth.webp";
+            filth.draggable = false;
+            filth.style.width = "32px";
+            filth.style.height = "64px";
+            filth.style.position = "absolute";
+            filth.style.left = Math.random() * 260 + "px";
+            filth.style.top = Math.random() * 170 + 60 + "px";
+            filth.style.transitionTimingFunction = "linear";
+            filth.style.transitionDuration = "400ms";
+            mainDiv.appendChild(filth);
+            filth.style.cursor = "crosshair";
+            filth.addEventListener("click", () => {
+              j--;
+              if (j == 0) {
+                compBar.style.transform = "scaleY(0)";
+                setTimeout(() => {
+                  let go = document.createElement("button");
+                  go.classList.add("useful");
+                  go.innerText = "Continue";
+                  go.style.marginTop = "5px";
+                  compBar.innerHTML = "";
+                  compBar.appendChild(go);
+                  compBar.style.transform = "scaleY(1)";
+                  go.addEventListener("mousedown", () => {
+                    clicky.currentTime = 0;
+                    clicky.play();
+                  });
+                  go.addEventListener("click", () => {
+                    yup_human();
+                    go.disabled = true;
+                  });
+                }, 200);
+              }
+              compBar.innerText = 6 - j + "/6";
+              filth.style.pointerEvents = "none";
+              filth.style.transform =
+                "scale(0) rotate(90deg) translate(30px, -30px)";
+              let shoot_audio = new Audio("/audio/revolver_shoot.ogg");
+              mainDiv.appendChild(shoot_audio);
+              shoot_audio.volume = 0.4;
+              shoot_audio.play();
+              let blood = document.createElement("img");
+              blood.src = "/images/blood.png";
+              blood.style.position = "absolute";
+              blood.style.width = "64px";
+              blood.style.height = "64px";
+              blood.style.pointerEvents = "none";
+              blood.style.top = filth.style.top;
+              blood.style.left = "calc(" + filth.style.left + " - 8px)";
+              blood.style.filter = "opacity(1)";
+              blood.style.transitionDuration = "300ms";
+              blood.style.transitionTimingFunction = "linear";
+              mainDiv.appendChild(blood);
+              setTimeout(() => {
+                blood.style.filter = "opacity(0)";
+                blood.style.transform = "scale(1.2)";
+              }, 16);
+              shoot_audio.addEventListener("ended", () => {
+                shoot_audio.remove();
+                filth.remove();
+              });
+            });
+          }
+          break;
+        case 1:
+          mainDiv.innerText = "parry the projectile";
+          compBar.innerText = "[F] to parry";
+          let stray = document.createElement("img");
+          stray.src = "/images/stray.webp";
+          stray.style.width = "16px";
+          stray.style.position = "absolute";
+          stray.style.left = "calc(50% - 8px)";
+          stray.style.top = "128px";
+          stray.draggable = false;
+          mainDiv.appendChild(stray);
+          let p = false;
+          let l = 1;
+          let k = 1;
+          let h = false;
+          let move = (element, mult) => {
+            element.t += 1;
+            !p ? (k += mult * (element.t * 0.01)) : (k -= 2);
+            element.style.transform = "scale(" + k + ")";
+            if (element.t != 60 && !p) {
+              if (element.t > 30) {
+                h = true;
+              }
+              requestAnimationFrame(() => {
+                move(element, mult);
+              });
+            } else if (!p) {
+              k = 1;
+              h = false;
+              element.remove();
+              let ow = new Audio("/audio/damage.ogg");
+              mainDiv.appendChild(ow);
+              ow.play();
+              body.style.filter = "sepia(1) blur(3px)";
+              body.style.transitionDuration = "0ms";
+              setTimeout(() => {
+                body.style.filter = "sepia(1) saturate(1.2)";
+                body.style.transitionDuration = "100ms";
+              }, 16);
+              setTimeout(() => {
+                body.style.filter = "none";
+                body.style.transitionDuration = "300ms";
+              }, 116);
+              setTimeout(() => {
+                body.style.filter = "none";
+                body.style.transitionDuration = "0ms";
+              }, 416);
+              setTimeout(() => {
+                ow.remove();
+              }, 800);
+            } else {
+              let ye = new Audio("/audio/parry.mp3");
+              mainDiv.appendChild(ye);
+              clearInterval(shoot);
+              ye.play();
+              body.style.filter = "brightness(2)";
+              setTimeout(() => {
+                body.style.filter = "none";
+                element.style.transitionDuration = "300ms";
+                element.style.transform = "scale(1)";
+              }, 400);
+              setTimeout(() => {
+                element.remove();
+                stray.remove();
+                let explosionsfx = new Audio("/audio/explosion.ogg");
+                mainDiv.appendChild(explosionsfx);
+                explosionsfx.play();
+                let e_shock = document.createElement("div");
+                e_shock.style.position = "absolute";
+                e_shock.style.width = "20px";
+                e_shock.style.height = "20px";
+                e_shock.style.top = "calc(50% - 10px)";
+                e_shock.style.left = "calc(50% - 10px)";
+                e_shock.style.backgroundColor = "#fff4";
+                e_shock.style.borderRadius = "900px";
+                e_shock.style.transitionDuration = "1.2s";
+                e_shock.style.transitionTimingFunction = "linear";
+                let e_blast = document.createElement("div");
+                e_blast.style.position = "absolute";
+                e_blast.style.width = "10px";
+                e_blast.style.height = "10px";
+                e_blast.style.top = "calc(50% - 5px)";
+                e_blast.style.left = "calc(50% - 5px)";
+                e_blast.style.backgroundColor = "#fa3f";
+                e_blast.style.borderRadius = "900px";
+                e_blast.style.transitionDuration = "1.6s";
+                e_blast.style.transitionTimingFunction = "linear";
+                mainDiv.appendChild(e_shock);
+                mainDiv.appendChild(e_blast);
+                setTimeout(() => {
+                  compBar.style.transform = "scaleY(0)";
+                }, 800);
+                setTimeout(() => {
+                  e_shock.style.width = "200px";
+                  e_shock.style.height = "200px";
+                  e_shock.style.top = "calc(50% - 100px)";
+                  e_shock.style.left = "calc(50% - 100px)";
+                  e_shock.style.backgroundColor = "#fff0";
+
+                  e_blast.style.width = "120px";
+                  e_blast.style.height = "120px";
+                  e_blast.style.top = "calc(50% - 60px)";
+                  e_blast.style.left = "calc(50% - 60px)";
+                  e_blast.style.backgroundColor = "#fa30";
+                }, 16);
+                setTimeout(() => {
+                  let go = document.createElement("button");
+                  go.classList.add("useful");
+                  go.innerText = "Continue";
+                  go.style.marginTop = "5px";
+                  compBar.innerHTML = "";
+                  compBar.appendChild(go);
+                  compBar.style.transform = "scaleY(1)";
+                  go.addEventListener("mousedown", () => {
+                    clicky.currentTime = 0;
+                    clicky.play();
+                  });
+                  go.addEventListener("click", () => {
+                    yup_human();
+                    go.disabled = true;
+                  });
+                }, 1000);
+              }, 700);
+            }
+          };
+          document.addEventListener("keypress", (e) => {
+            if (e.key == "f" && h) {
+              p = true;
+            }
+          });
+          let shoot = setInterval(() => {
+            let browawamp = new Audio("/audio/stray_shoot.ogg");
+            mainDiv.appendChild(browawamp);
+            browawamp.volume = 0.4;
+            browawamp.play();
+            let orb = document.createElement("img");
+            orb.src = "/images/orb.png";
+            orb.style.width = "12px";
+            orb.style.position = "absolute";
+            orb.style.left = "calc(50% - 6px)";
+            orb.style.top = "calc(50% - 16px)";
+            orb.style.transitionDuration = "64ms";
+            orb.t = 0;
+            orb.draggable = false;
+            mainDiv.appendChild(orb);
+            move(orb, l);
+            setTimeout(() => {
+              browawamp.remove();
+            }, 2000);
+          }, 5000);
+          break;
+        case 2:
+          console.log("coin_shoot");
+          break;
+        default:
+          mainDiv.innerText = "Error: level does not exist";
+          console.log("oops! challenge ID not found <-|" + challenge + "|->");
+          break;
+      }
+    }
+  </script>
+</html>

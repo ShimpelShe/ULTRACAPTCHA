@@ -1,0 +1,151 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ULTRACAPTCHA</title>
+  </head>
+  <style>
+    @font-face {
+      font-family: ULTRAFONT;
+      src: url(/fonts/VCR_OSD_MONO.ttf);
+    }
+    body {
+      background-color: #191919;
+      color: #fff;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "ULTRAFONT", "Courier New", Courier, monospace;
+    }
+    h1 {
+      font-weight: normal;
+    }
+    .gold {
+      color: #fa0;
+    }
+    .inset {
+      margin: 12px auto;
+      padding: 7px;
+      width: fit-content;
+      border: 2px solid #fff;
+      border-radius: 4px;
+      background-color: #191919;
+      color: #fff;
+    }
+    .completed {
+      margin: 12px auto;
+      padding: 7px;
+      width: fit-content;
+      border: 2px solid #0f0;
+      color: #0f0;
+      border-radius: 4px;
+    }
+    .useful {
+      font-family: "ULTRAFONT", "Courier New", Courier, monospace;
+      border: 2px solid #000;
+      border-radius: 4px;
+      padding: 7px 13px;
+      color: white;
+      height: 32px;
+      background-image: linear-gradient(
+        to bottom,
+        #7b7b7b,
+        #5b5b5b 3px,
+        #3a3a3a,
+        #1b1b1b 26px,
+        #5b5b5b 48px
+      );
+    }
+    .useful:hover {
+      font-family: "ULTRAFONT", "Courier New", Courier, monospace;
+      border: 2px solid #000;
+      border-radius: 4px;
+      padding: 7px 13px;
+      color: white;
+      height: 32px;
+      background-image: linear-gradient(
+        to bottom,
+        #ababab,
+        #6b6b6b 3px,
+        #4a4a4a,
+        #1b1b1b 26px,
+        #6b6b6b 48px
+      );
+    }
+    .useful:disabled,
+    .useful:hover:active {
+      font-family: "ULTRAFONT", "Courier New", Courier, monospace;
+      border: 2px solid #000;
+      border-radius: 4px;
+      padding: 7px 13px;
+      color: #999;
+      height: 32px;
+      background-image: linear-gradient(
+        to bottom,
+        #1b1b1b,
+        #3a3a3a 3px,
+        #1b1b1b,
+        #3a3a3a 26px,
+        #7b7b7b 48px
+      );
+    }
+    textarea {
+      resize: none;
+    }
+  </style>
+  <body>
+    <div id="main">
+      <h1>BEHOLD, THE POWER OF.. a <span class="gold">captcha</span>?</h1>
+      <p>
+        Indeed, behold, the ULTRACAPTCHA V1!
+        <i style="font-size: small">pun not intended</i>
+      </p>
+      <p>It has a whopping <h1 style="display: inline;">2 CHALLENGES!</h1><i style="font-size: small">not even joking</i></p>
+      <p>So what are you waiting for? Put this on your website right this instant!!!</p>
+      <iframe
+        src="/captcha/index.html"
+        width="300px"
+        height="300px"
+        style="border: none"
+      ></iframe>
+      <p class="inset" id="completed">Awaiting completion...</p>
+      <textarea
+        rows="1"
+        cols="95"
+        readonly="true"
+        class="inset"
+        style="text-align: center"
+      >
+<iframe src="/captcha/index.html" width="300px" height="300px" style="border: none"></iframe></textarea
+      >
+      <br>
+      <button id="copylink" class="useful">Copy</button>
+      <br>
+      <br>
+      <textarea
+        rows="5"
+        cols="41"
+        readonly="true"
+        class="inset"
+        style="text-align: left"
+      >
+window.addEventListener("message", (e) => {
+    if (e.data == "non-machine") {
+      console.log("completed")
+    }
+  });</textarea>
+      <br>
+      <button id="copyscript" class="useful">Copy</button>
+    </div>
+  </body>
+  <script>
+    window.addEventListener("message", (e) => {
+      if (e.data == "non-machine") {
+        let a = document.getElementById("completed");
+        a.innerText = "Captcha completed!";
+        a.classList.add("completed");
+      }
+    });
+  </script>
+</html>
