@@ -1,6 +1,6 @@
 @font-face {
   font-family: ULTRAFONT;
-  src: url(/fonts/VCR_OSD_MONO.ttf);
+  src: url(../fonts/VCR_OSD_MONO.ttf);
 }
 #titlebar {
   height: 16px;
