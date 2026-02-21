@@ -38,7 +38,10 @@
     const startBtn = document.getElementById("start");
     const body = document.body;
     const kiis = [];
+    var mdown = false;
+    var mdat = [];
     const clicky = new Audio("../audio/click.wav");
+    var challenge = 0;
     startBtn.addEventListener("mousedown", () => {
       clicky.currentTime = 0;
       clicky.play();
@@ -51,15 +54,48 @@
       if (!kiis.includes(e.key)) {
         kiis.push(e.key);
       }
+      if (e.key == "f" && challenge == 1) {
+        paud("../audio/swoosh_punch.ogg", 1);
+      }
     });
     document.addEventListener("keyup", (e) => {
       if (kiis.includes(e.key)) {
         kiis.pop(e.key);
       }
     });
+    document.addEventListener("mousedown", (e) => {
+      mdown = true;
+      if (challenge == 1) {
+        paud("../audio/swoosh_punch.ogg", 1);
+      }
+    });
+    document.addEventListener("mouseup", (e) => {
+      mdown = false;
+    });
+    function paud(audio, vol, fade) {
+      let a = new Audio(audio);
+      let v = null;
+      a.volume = vol;
+      mainDiv.appendChild(a);
+      a.play();
+      if (fade) {
+        a.addEventListener("loadedmetadata", () => {
+          v = (a, d, vo) => {
+            a.volume = (a.currentTime / d) * vo;
+            requestAnimationFrame(() => {
+              v ? v(a, d, vo) : null;
+            });
+          };
+          v(a, a.duration, vol);
+        });
+      }
+      a.addEventListener("ended", () => {
+        a.remove();
+        v = null;
+      });
+    }
     function start() {
-      var challenge =
-        UA.get("c") || Math.floor(Math.random() * challenges.length);
+      challenge = UA.get("c") || Math.floor(Math.random() * challenges.length);
       challenge = Number(challenge);
       titleTxt.innerText =
         "ULTRACAPTCHA " +
@@ -95,6 +131,7 @@
               if (j == 0) {
                 compBar.style.transform = "scaleY(0)";
                 setTimeout(() => {
+                  challenge = -1;
                   let go = document.createElement("button");
                   go.classList.add("useful");
                   go.innerText = "Continue";
@@ -159,7 +196,7 @@
           let k = 1;
           let h = false;
           let move = (element, mult) => {
-            if (kiis.includes("f") && h) {
+            if ((kiis.includes("f") || mdown) && h && h != 2) {
               p = true;
             } else {
               p = false;
@@ -178,9 +215,7 @@
               k = 1;
               h = false;
               element.remove();
-              let ow = new Audio("../audio/damage.ogg");
-              mainDiv.appendChild(ow);
-              ow.play();
+              paud("../audio/damage.ogg", 1);
               body.style.filter = "sepia(1) blur(3px)";
               body.style.transitionDuration = "0ms";
               setTimeout(() => {
@@ -195,10 +230,8 @@
                 body.style.filter = "none";
                 body.style.transitionDuration = "0ms";
               }, 416);
-              setTimeout(() => {
-                ow.remove();
-              }, 800);
             } else {
+              h = 2;
               let ye = new Audio("../audio/parry.mp3");
               mainDiv.appendChild(ye);
               clearInterval(shoot);
@@ -254,6 +287,7 @@
                   e_blast.style.backgroundColor = "#fa30";
                 }, 16);
                 setTimeout(() => {
+                  challenge = -1;
                   let go = document.createElement("button");
                   go.classList.add("useful");
                   go.innerText = "Continue";
@@ -274,10 +308,7 @@
             }
           };
           let shoot = setInterval(() => {
-            let browawamp = new Audio("../audio/stray_shoot.ogg");
-            mainDiv.appendChild(browawamp);
-            browawamp.volume = 0.4;
-            browawamp.play();
+            paud("../audio/stray_shoot.ogg", 0.4);
             let orb = document.createElement("img");
             orb.src = "../images/orb.png";
             orb.style.width = "12px";
@@ -290,9 +321,6 @@
             orb.draggable = false;
             mainDiv.appendChild(orb);
             move(orb, l);
-            setTimeout(() => {
-              browawamp.remove();
-            }, 2000);
           }, 5000);
           break;
         case 2:
@@ -300,6 +328,21 @@
           body.style.cursor = "crosshair";
           titleBar.style.cursor = "default";
           compBar.innerText = "[LMB] To shoot [RMB] to flip\n[0/3]";
+          document.addEventListener("mousedown", (e) => {
+            console.log(e.button);
+            switch (e.button) {
+              case 0:
+                paud("../audio/revolver_shoot.ogg", 0.4);
+                break;
+              case 2:
+                paud("../audio/coinflip.ogg", 0.4);
+                paud("../audio/coinspin.ogg", 0.3, true);
+                let coin = document.createElement("img");
+                break;
+              default:
+                break;
+            }
+          });
           break;
         default:
           mainDiv.innerText = "Error: level does not exist";
