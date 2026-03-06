@@ -379,11 +379,16 @@
                 cs.loop = () => {
                   cs.i++;
                   cs.coin.style.left =
-                    "calc(0% - calc(16px - " + cs.coin.tosspos[0] + "px))";
+                    "calc(0% - calc(16px - " +
+                    (cs.coin.tosspos[0] +
+                      1 * (cs.coin.tosspos[0] - cs.coin.tosspos[0] / 2)) +
+                    "px))";
                   cs.coin.style.top =
                     "calc(0% - calc(48px - " +
                     (cs.coin.tosspos[1] +
-                      (cs.i > 60 ? 100 : Math.sin(cs.i / 20) * -90)) +
+                      (cs.i > 60
+                        ? (cs.i - 60) * 5
+                        : Math.sin(cs.i / 20) * -90)) +
                     "px))";
                   requestAnimationFrame(cs.loop);
                 };
