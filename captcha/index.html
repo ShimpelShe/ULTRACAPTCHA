@@ -392,13 +392,15 @@
                           ? (cs.i - 45) * 5
                           : Math.sin(cs.i / 15) * -90)) +
                       "px))";
-                    cs.coin.style.width = "calc(32px - " + cs.i / 4 + "px)";
-                    cs.coin.style.height = "calc(32px - " + cs.i / 4 + "px)";
+                    cs.coin.style.width =
+                      "calc(32px - " + cs.i / (cs.i / 30 + 1.2) + "px)";
+                    cs.coin.style.height =
+                      "calc(32px - " + cs.i / (cs.i / 30 + 1.2) + "px)";
 
                     cs.hit.style.left =
                       "calc(0% - calc(24px - " +
                       (cs.coin.tosspos[0] +
-                        (-cs.i * (cs.coin.tosspos[0] - 150)) / 90) +
+                        (-cs.i * (cs.coin.tosspos[0] - 150)) / 150) +
                       "px))";
                     cs.hit.style.top =
                       "calc(0% - calc(56px - " +
@@ -439,6 +441,7 @@
                   break;
               }
             } else if (coins == 3) {
+              paud("../audio/revolver_shoot.ogg", 0.4);
               compBar.style.transform = "scaleY(0)";
               setTimeout(() => {
                 coins = 999;
@@ -461,6 +464,8 @@
               }, 200);
             }
           });
+          break;
+        case 3:
           break;
         default:
           mainDiv.innerText = "Error: level does not exist";
