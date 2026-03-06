@@ -25,23 +25,28 @@
     transform: scale(1);
     opacity: 1;
   }
-  50% {
+  8% {
     transform: scale(0.85) rotate(5deg);
     filter: grayscale(1);
-    opacity: 0;
+    opacity: 0.5;
   }
-  50.01% {
+  50% {
+    transform: scale(0.83) rotate(5.1deg);
+    filter: grayscale(1);
+    opacity: 0.25;
+  }
+  75% {
     transform: scale(1) rotate(0deg) translateY(300px);
     filter: grayscale(0);
     opacity: 0;
   }
-  50.02% {
-    transform: scale(1) rotate(0deg) translateY(300px);
+  75.01% {
+    transform: scale(1) scaleY(0) rotate(0deg) translateY(-150px);
     filter: grayscale(0);
     opacity: 1;
   }
   100% {
-    transform: scale(1) rotate(0deg) translateY(0px);
+    transform: scale(1) scaleY(1) rotate(0deg) translateY(0px);
     filter: grayscale(0);
     opacity: 1;
   }
@@ -148,7 +153,7 @@
   );
 }
 .reroll {
-  animation: out 0.6s linear forwards;
+  animation: out 1s linear forwards;
 }
 .icon {
   display: inline-block;
