@@ -11,7 +11,7 @@
       <span id="titletext">ULTRACAPTCHA</span>
       <button class="useless" style="right: 50px">&#x1F784;</button
       ><button class="useless" style="right: 28px">+</button
-      ><button class="useless" style="right: 6px">&#x25FB;</button>
+      ><button class="useless" style="right: 6px" id="reroll">&#x25FB;</button>
     </div>
     <div id="main">
       <div id="content">
@@ -36,6 +36,7 @@
     const titleBar = document.getElementById("titlebar");
     const titleTxt = document.getElementById("titletext");
     const startBtn = document.getElementById("start");
+    const rerollBtn = document.getElementById("reroll");
     const body = document.body;
     const kiis = [];
     var mdown = false;
@@ -52,6 +53,42 @@
     });
     startBtn.addEventListener("click", () => {
       start();
+    });
+    rerollBtn.addEventListener("click", () => {
+      titleTxt.innerText = "Rerolling...";
+      document.body.classList.add("reroll");
+      setTimeout(() => {
+        mainDiv.replaceChildren();
+        compBar.replaceChildren();
+        titleTxt.innerText = "ULTRACAPTCHA";
+        let ultraheader = document.createElement("h1");
+        ultraheader.style.fontWeight = "normal";
+        ultraheader.style.marginTop = "75px";
+        ultraheader.innerText = "ULTRACAPTCHA";
+        mainDiv.appendChild(ultraheader);
+        let ultrabutton = document.createElement("button");
+        ultrabutton.classList.add("useful");
+        ultrabutton.style.position = "relative";
+        ultrabutton.style.top = "5px";
+        ultrabutton.id = "start";
+        ultrabutton.innerText = "Start";
+        mainDiv.appendChild(ultrabutton);
+        document.removeEventListener("keydown", () => {});
+        document.removeEventListener("keyup", () => {});
+        document.removeEventListener("mousedown", () => {});
+        document.removeEventListener("mouseup", () => {});
+        ultrabutton.addEventListener("mousedown", () => {
+          clicky.currentTime = 0;
+          clicky.play();
+        });
+        ultrabutton.addEventListener("click", () => {
+          start();
+        });
+      }, 300);
+      setTimeout(() => {
+        document.body.classList.remove("reroll");
+        window.location.reload();
+      }, 600);
     });
     var UA = new URLSearchParams(window.location.search);
     document.addEventListener("keydown", (e) => {
@@ -76,6 +113,7 @@
     document.addEventListener("mouseup", (e) => {
       mdown = false;
     });
+
     function paud(audio, vol, fade) {
       let a = new Audio(audio);
       let v = null;

@@ -101,15 +101,20 @@
         Indeed, behold, the ULTRACAPTCHA V1!
         <i style="font-size: small">pun not intended</i>
       </p>
-      <p>It has a whopping <h1 style="display: inline;">3 CHALLENGES!</h1><i style="font-size: small">not even joking</i></p>
+      <p style="display: inline;">It has a whopping <h1 style="display: inline;">3 CHALLENGES!</h1><i style="font-size: small">not even joking</i></p>
       <p>So what are you waiting for? Put this on your website right this instant!!!</p>
+      <div id="captcha_container">
       <iframe
         src="https://shimpelshe.github.io/ULTRACAPTCHA/captcha/"
         width="300px"
         height="300px"
         style="border: none"
       ></iframe>
-      <p class="inset" id="completed">Awaiting completion...</p>
+      </div>
+      <br />
+      <button id="reset" class="useful">Reset</button>
+      <p class="inset" id="completed" style="display: inline;">Awaiting completion...</p>
+      <br />
       <textarea
         rows="1"
         cols="122"
@@ -133,10 +138,10 @@
         id="scriptz"
       >
 window.addEventListener("message", (e) => {
-    if (e.data == "non-machine") {
-      console.log("completed")
-    }
-  });</textarea>
+  if (e.data == "non-machine") {
+    console.log("completed")
+  }
+});</textarea>
       <br>
       <button id="copyscript" class="useful">Copy</button>
     </div>
@@ -156,6 +161,12 @@ window.addEventListener("message", (e) => {
     var cs = document.getElementById("copyscript")
     cs.addEventListener("click", ()=>{
       navigator.clipboard.writeText(document.getElementById("scriptz").innerHTML.replace("&gt;",">"))
+    })
+    var rs = document.getElementById("reset")
+    rs.addEventListener("click", ()=>{
+      let a = document.getElementById("completed");
+      a.innerText = "Awaiting completion...";
+      a.classList.remove("completed");
     })
   </script>
 </html>
