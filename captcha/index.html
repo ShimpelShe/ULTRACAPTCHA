@@ -30,7 +30,7 @@
     document.addEventListener("contextmenu", (e) => {
       e.preventDefault();
     });
-    const challenges = ["filth_kill", "stray_parry"];
+    const challenges = ["filth_kill", "stray_parry", "coin_shoot"];
     const mainDiv = document.getElementById("content");
     const compBar = document.getElementById("completionState");
     const titleBar = document.getElementById("titlebar");
@@ -328,91 +328,137 @@
           body.style.cursor = "crosshair";
           titleBar.style.cursor = "default";
           compBar.innerText = "[LMB] To shoot [RMB] to flip\n[0/3]";
+          let coins = 0;
           document.addEventListener("mousedown", (e) => {
-            switch (e.button) {
-              case 0:
-                paud("../audio/revolver_shoot.ogg", 0.4);
-                break;
-              case 2:
-                paud("../audio/coinflip.ogg", 0.4);
-                let cs = {};
-                cs.flippuh = new Audio("../audio/coinspin.ogg");
-                cs.flippuh.volume = 0.2;
-                mainDiv.appendChild(cs.flippuh);
-                cs.flippuh.play();
-                cs.flippuh.addEventListener("loadedmetadata", () => {
-                  v = (a, d, vo) => {
-                    a.currentTime * 2 > d
-                      ? (a.volume = vo - (a.currentTime / d) * vo)
-                      : (a.volume = (a.currentTime / d) * vo);
-                    requestAnimationFrame(() => {
-                      v && a.currentTime < d ? v(a, d, vo) : null;
-                    });
-                  };
-                  v(cs.flippuh, cs.flippuh.duration, cs.flippuh.volume);
-                });
-                cs.hit = document.createElement("div");
-                cs.hit.style.position = "absolute";
-                cs.hit.style.width = "48px";
-                cs.hit.style.height = "48px";
-                cs.hit.style.left =
-                  "calc(0% - calc(24px - " + e.clientX + "px))";
-                cs.hit.style.top =
-                  "calc(0% - calc(56px - " + e.clientY + "px))";
-                cs.hit.style.backgroundColor = "#f005";
-                mainDiv.appendChild(cs.hit);
-                cs.coin = document.createElement("img");
-                cs.coin.src = "../images/coin_f.webp";
-                cs.coin.style.width = "32px";
-                cs.coin.style.height = "32px";
-                cs.coin.style.position = "absolute";
-                cs.coin.draggable = false;
-                cs.coin.tosspos = [e.clientX, e.clientY];
-                cs.coin.style.left =
-                  "calc(0% - calc(16px - " + e.clientX + "px))";
-                cs.coin.style.top =
-                  "calc(0% - calc(48px - " + e.clientY + "px))";
-                cs.coin.style.pointerEvents = "none";
-                cs.coin.classList.add("speen");
-                mainDiv.appendChild(cs.coin);
-                cs.i = 0;
-                cs.loop = () => {
-                  cs.i++;
+            if (coins < 3) {
+              switch (e.button) {
+                case 0:
+                  paud("../audio/revolver_shoot.ogg", 0.4);
+                  break;
+                case 2:
+                  paud("../audio/coinflip.ogg", 0.4);
+                  let cs = {};
+                  cs.flippuh = new Audio("../audio/coinspin.ogg");
+                  cs.flippuh.volume = 0.2;
+                  mainDiv.appendChild(cs.flippuh);
+                  cs.flippuh.play();
+                  cs.flippuh.addEventListener("loadedmetadata", () => {
+                    v = (a, d, vo) => {
+                      a.currentTime * 2 > d
+                        ? (a.volume = vo - (a.currentTime / d) * vo)
+                        : (a.volume = (a.currentTime / d) * vo);
+                      requestAnimationFrame(() => {
+                        v && a.currentTime < d ? v(a, d, vo) : null;
+                      });
+                    };
+                    v(cs.flippuh, cs.flippuh.duration, cs.flippuh.volume);
+                  });
+                  cs.hit = document.createElement("div");
+                  cs.hit.style.position = "absolute";
+                  cs.hit.style.width = "48px";
+                  cs.hit.style.height = "48px";
+                  cs.hit.style.left =
+                    "calc(0% - calc(24px - " + e.clientX + "px))";
+                  cs.hit.style.top =
+                    "calc(0% - calc(56px - " + e.clientY + "px))";
+                  cs.hit.style.backgroundColor = "#f000";
+                  mainDiv.appendChild(cs.hit);
+                  cs.coin = document.createElement("img");
+                  cs.coin.src = "../images/coin_f.webp";
+                  cs.coin.style.width = "32px";
+                  cs.coin.style.height = "32px";
+                  cs.coin.style.position = "absolute";
+                  cs.coin.draggable = false;
+                  cs.coin.tosspos = [e.clientX, e.clientY];
                   cs.coin.style.left =
-                    "calc(0% - calc(16px - " +
-                    (cs.coin.tosspos[0] +
-                      (cs.i * (cs.coin.tosspos[0] - 150)) / 100) +
-                    "px))";
+                    "calc(0% - calc(16px - " + e.clientX + "px))";
                   cs.coin.style.top =
-                    "calc(0% - calc(48px - " +
-                    (cs.coin.tosspos[1] +
-                      (cs.i > 60
-                        ? (cs.i - 60) * 5
-                        : Math.sin(cs.i / 20) * -90)) +
-                    "px))";
-                  requestAnimationFrame(cs.loop);
-                };
-                cs.loop();
-                cs.flippuh.addEventListener("ended", () => {
-                  cs.coin.remove();
-                  cs.flippuh.remove();
-                  cs.hit.remove();
-                });
-                cs.hit.addEventListener("mousedown", (e) => {
-                  if (e.buttons == 1) {
+                    "calc(0% - calc(48px - " + e.clientY + "px))";
+                  cs.coin.style.pointerEvents = "none";
+                  cs.coin.classList.add("speen");
+                  mainDiv.appendChild(cs.coin);
+                  cs.i = 0;
+                  cs.loop = () => {
+                    cs.i++;
+                    cs.coin.style.left =
+                      "calc(0% - calc(16px - " +
+                      (cs.coin.tosspos[0] +
+                        (-cs.i * (cs.coin.tosspos[0] - 150)) / 90) +
+                      "px))";
+                    cs.coin.style.top =
+                      "calc(0% - calc(48px - " +
+                      (cs.coin.tosspos[1] +
+                        (cs.i > 45
+                          ? (cs.i - 45) * 5
+                          : Math.sin(cs.i / 15) * -90)) +
+                      "px))";
+                    cs.coin.style.width = "calc(32px - " + cs.i / 4 + "px)";
+                    cs.coin.style.height = "calc(32px - " + cs.i / 4 + "px)";
+
+                    cs.hit.style.left =
+                      "calc(0% - calc(24px - " +
+                      (cs.coin.tosspos[0] +
+                        (-cs.i * (cs.coin.tosspos[0] - 150)) / 90) +
+                      "px))";
+                    cs.hit.style.top =
+                      "calc(0% - calc(56px - " +
+                      (cs.coin.tosspos[1] +
+                        (cs.i > 45
+                          ? (cs.i - 45) * 5
+                          : Math.sin(cs.i / 15) * -90)) +
+                      "px))";
+                    cs.hit.style.width = "calc(48px - " + cs.i / 5 + "px)";
+                    cs.hit.style.height = "calc(48px - " + cs.i / 5 + "px)";
+
+                    requestAnimationFrame(cs.loop);
+                  };
+                  cs.loop();
+                  cs.flippuh.addEventListener("ended", () => {
                     cs.coin.remove();
                     cs.flippuh.remove();
                     cs.hit.remove();
-                    cs.bamp = new Audio("../audio/coinflip.ogg");
-                    cs.bamp.volume = 1;
-                    cs.bamp.playbackRate = 3;
-                    mainDiv.appendChild(cs.bamp);
-                    cs.bamp.play();
-                  }
+                  });
+                  cs.hit.addEventListener("mousedown", (e) => {
+                    if (e.buttons == 1) {
+                      cs.coin.remove();
+                      cs.flippuh.remove();
+                      cs.hit.remove();
+                      cs.bamp = new Audio("../audio/coinflip.ogg");
+                      cs.bamp.volume = 1;
+                      cs.bamp.playbackRate = 3;
+                      mainDiv.appendChild(cs.bamp);
+                      cs.bamp.play();
+                      coins++;
+                      if (coins < 3) {
+                        compBar.innerText = `[LMB] To shoot [RMB] to flip\n[${coins}/3]`;
+                      }
+                    }
+                  });
+                  break;
+                default:
+                  break;
+              }
+            } else if (coins == 3) {
+              compBar.style.transform = "scaleY(0)";
+              setTimeout(() => {
+                coins = 999;
+                challenge = -1;
+                let go = document.createElement("button");
+                go.classList.add("useful");
+                go.innerText = "Continue";
+                go.style.marginTop = "5px";
+                compBar.innerHTML = "";
+                compBar.appendChild(go);
+                compBar.style.transform = "scaleY(1)";
+                go.addEventListener("mousedown", () => {
+                  clicky.currentTime = 0;
+                  clicky.play();
                 });
-                break;
-              default:
-                break;
+                go.addEventListener("click", () => {
+                  yup_human();
+                  go.disabled = true;
+                });
+              }, 200);
             }
           });
           break;
