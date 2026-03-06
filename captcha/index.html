@@ -42,6 +42,10 @@
     var mdat = [];
     const clicky = new Audio("../audio/click.wav");
     var challenge = 0;
+    var mobile =
+      /Mobi|Android|iPad|iPhone/i.test(navigator.userAgent) ||
+      navigator.maxTouchPoints > 1;
+
     startBtn.addEventListener("mousedown", () => {
       clicky.currentTime = 0;
       clicky.play();
@@ -329,6 +333,107 @@
           titleBar.style.cursor = "default";
           compBar.innerText = "[LMB] To shoot [RMB] to flip\n[0/3]";
           let coins = 0;
+          mobileCoin = document.createElement("div");
+          mobileCoin.style.position = "absolute";
+          mobileCoin.style.width = "92px";
+          mobileCoin.style.height = "92px";
+          mobileCoin.style.left = "calc(100% - 102px)";
+          mobileCoin.style.top = "calc(100% - 102px)";
+          mobileCoin.style.borderRadius = "92px";
+          mobileCoin.style.backgroundColor = "#fe35";
+          mobileCoin.style.display = mobile ? "block" : "none";
+          mainDiv.appendChild(mobileCoin);
+          mobileCoin.addEventListener("mousedown", (e) => {
+            coinzStuff({
+              clientX: 150,
+              clientY: 250,
+            });
+          });
+          function coinzStuff(e) {
+            paud("../audio/coinflip.ogg", 0.4);
+            let cs = {};
+            cs.flippuh = new Audio("../audio/coinspin.ogg");
+            cs.flippuh.volume = 0.2;
+            mainDiv.appendChild(cs.flippuh);
+            cs.flippuh.play();
+            cs.flippuh.addEventListener("loadedmetadata", () => {
+              v = (a, d, vo) => {
+                a.currentTime * 2 > d
+                  ? (a.volume = vo - (a.currentTime / d) * vo)
+                  : (a.volume = (a.currentTime / d) * vo);
+                requestAnimationFrame(() => {
+                  v && a.currentTime < d ? v(a, d, vo) : null;
+                });
+              };
+              v(cs.flippuh, cs.flippuh.duration, cs.flippuh.volume);
+            });
+            cs.hit = document.createElement("div");
+            cs.hit.style.position = "absolute";
+            cs.hit.style.width = "48px";
+            cs.hit.style.height = "48px";
+            cs.hit.style.left = "calc(0% - calc(24px - " + e.clientX + "px))";
+            cs.hit.style.top = "calc(0% - calc(56px - " + e.clientY + "px))";
+            cs.hit.style.backgroundColor = "#f000";
+            mainDiv.appendChild(cs.hit);
+            cs.coin = document.createElement("img");
+            cs.coin.src = "../images/coin_f.webp";
+            cs.coin.style.width = "32px";
+            cs.coin.style.height = "32px";
+            cs.coin.style.position = "absolute";
+            cs.coin.draggable = false;
+            cs.coin.tosspos = [e.clientX, e.clientY];
+            cs.coin.style.left = "calc(0% - calc(16px - " + e.clientX + "px))";
+            cs.coin.style.top = "calc(0% - calc(48px - " + e.clientY + "px))";
+            cs.coin.style.pointerEvents = "none";
+            cs.coin.classList.add("speen");
+            mainDiv.appendChild(cs.coin);
+            cs.i = 0;
+            cs.loop = () => {
+              mobile ? (cs.i += 0.85) : (cs.i += 1);
+              let csize = cs.i / (cs.i / 30 + 1.2);
+              let hsize = cs.i / 5;
+              let movev =
+                cs.coin.tosspos[1] +
+                (cs.i > 45 ? (cs.i - 45) * 5 : Math.sin(cs.i / 15) * -90);
+              let moveh =
+                cs.coin.tosspos[0] + (-cs.i * (cs.coin.tosspos[0] - 150)) / 120;
+              cs.coin.style.width = "calc(32px - " + csize + "px)";
+              cs.coin.style.height = "calc(32px - " + csize + "px)";
+              cs.coin.style.left =
+                "calc(0% - calc(16px - " + (moveh + csize / 2) + "px))";
+              cs.coin.style.top = "calc(0% - calc(48px - " + movev + "px))";
+
+              cs.hit.style.width = "calc(48px - " + hsize + "px)";
+              cs.hit.style.height = "calc(48px - " + hsize + "px)";
+              cs.hit.style.left =
+                "calc(0% - calc(24px - " + (moveh + hsize / 2) + "px))";
+              cs.hit.style.top = "calc(0% - calc(56px - " + movev + "px))";
+
+              requestAnimationFrame(cs.loop);
+            };
+            cs.loop();
+            cs.flippuh.addEventListener("ended", () => {
+              cs.coin.remove();
+              cs.flippuh.remove();
+              cs.hit.remove();
+            });
+            cs.hit.addEventListener("mousedown", (e) => {
+              if (e.buttons == 1) {
+                cs.coin.remove();
+                cs.flippuh.remove();
+                cs.hit.remove();
+                cs.bamp = new Audio("../audio/coinflip.ogg");
+                cs.bamp.volume = 1;
+                cs.bamp.playbackRate = 3;
+                mainDiv.appendChild(cs.bamp);
+                cs.bamp.play();
+                coins++;
+                if (coins < 3) {
+                  compBar.innerText = `[LMB] To shoot [RMB] to flip\n[${coins}/3]`;
+                }
+              }
+            });
+          }
           document.addEventListener("mousedown", (e) => {
             if (coins < 3) {
               switch (e.button) {
@@ -336,106 +441,7 @@
                   paud("../audio/revolver_shoot.ogg", 0.4);
                   break;
                 case 2:
-                  paud("../audio/coinflip.ogg", 0.4);
-                  let cs = {};
-                  cs.flippuh = new Audio("../audio/coinspin.ogg");
-                  cs.flippuh.volume = 0.2;
-                  mainDiv.appendChild(cs.flippuh);
-                  cs.flippuh.play();
-                  cs.flippuh.addEventListener("loadedmetadata", () => {
-                    v = (a, d, vo) => {
-                      a.currentTime * 2 > d
-                        ? (a.volume = vo - (a.currentTime / d) * vo)
-                        : (a.volume = (a.currentTime / d) * vo);
-                      requestAnimationFrame(() => {
-                        v && a.currentTime < d ? v(a, d, vo) : null;
-                      });
-                    };
-                    v(cs.flippuh, cs.flippuh.duration, cs.flippuh.volume);
-                  });
-                  cs.hit = document.createElement("div");
-                  cs.hit.style.position = "absolute";
-                  cs.hit.style.width = "48px";
-                  cs.hit.style.height = "48px";
-                  cs.hit.style.left =
-                    "calc(0% - calc(24px - " + e.clientX + "px))";
-                  cs.hit.style.top =
-                    "calc(0% - calc(56px - " + e.clientY + "px))";
-                  cs.hit.style.backgroundColor = "#f000";
-                  mainDiv.appendChild(cs.hit);
-                  cs.coin = document.createElement("img");
-                  cs.coin.src = "../images/coin_f.webp";
-                  cs.coin.style.width = "32px";
-                  cs.coin.style.height = "32px";
-                  cs.coin.style.position = "absolute";
-                  cs.coin.draggable = false;
-                  cs.coin.tosspos = [e.clientX, e.clientY];
-                  cs.coin.style.left =
-                    "calc(0% - calc(16px - " + e.clientX + "px))";
-                  cs.coin.style.top =
-                    "calc(0% - calc(48px - " + e.clientY + "px))";
-                  cs.coin.style.pointerEvents = "none";
-                  cs.coin.classList.add("speen");
-                  mainDiv.appendChild(cs.coin);
-                  cs.i = 0;
-                  cs.loop = () => {
-                    cs.i++;
-                    cs.coin.style.left =
-                      "calc(0% - calc(16px - " +
-                      (cs.coin.tosspos[0] +
-                        (-cs.i * (cs.coin.tosspos[0] - 150)) / 90) +
-                      "px))";
-                    cs.coin.style.top =
-                      "calc(0% - calc(48px - " +
-                      (cs.coin.tosspos[1] +
-                        (cs.i > 45
-                          ? (cs.i - 45) * 5
-                          : Math.sin(cs.i / 15) * -90)) +
-                      "px))";
-                    cs.coin.style.width =
-                      "calc(32px - " + cs.i / (cs.i / 30 + 1.2) + "px)";
-                    cs.coin.style.height =
-                      "calc(32px - " + cs.i / (cs.i / 30 + 1.2) + "px)";
-
-                    cs.hit.style.left =
-                      "calc(0% - calc(24px - " +
-                      (cs.coin.tosspos[0] +
-                        (-cs.i * (cs.coin.tosspos[0] - 150)) / 150) +
-                      "px))";
-                    cs.hit.style.top =
-                      "calc(0% - calc(56px - " +
-                      (cs.coin.tosspos[1] +
-                        (cs.i > 45
-                          ? (cs.i - 45) * 5
-                          : Math.sin(cs.i / 15) * -90)) +
-                      "px))";
-                    cs.hit.style.width = "calc(48px - " + cs.i / 5 + "px)";
-                    cs.hit.style.height = "calc(48px - " + cs.i / 5 + "px)";
-
-                    requestAnimationFrame(cs.loop);
-                  };
-                  cs.loop();
-                  cs.flippuh.addEventListener("ended", () => {
-                    cs.coin.remove();
-                    cs.flippuh.remove();
-                    cs.hit.remove();
-                  });
-                  cs.hit.addEventListener("mousedown", (e) => {
-                    if (e.buttons == 1) {
-                      cs.coin.remove();
-                      cs.flippuh.remove();
-                      cs.hit.remove();
-                      cs.bamp = new Audio("../audio/coinflip.ogg");
-                      cs.bamp.volume = 1;
-                      cs.bamp.playbackRate = 3;
-                      mainDiv.appendChild(cs.bamp);
-                      cs.bamp.play();
-                      coins++;
-                      if (coins < 3) {
-                        compBar.innerText = `[LMB] To shoot [RMB] to flip\n[${coins}/3]`;
-                      }
-                    }
-                  });
+                  coinzStuff(e);
                   break;
                 default:
                   break;
